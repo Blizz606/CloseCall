@@ -17,14 +17,57 @@
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
 </head>
 <body>
 
 <div class="panel">
-    <h2>Question</h2>
-    <p>Hier kommen später andere Sachen rein.</p>
+
+  <div class="mode-buttons">
+    <span class="mode-indicator" aria-hidden="true"></span>
+    <button class="mode-button mode-button--classic is-selected" type="button" aria-pressed="true">
+      <i data-lucide="target" aria-hidden="true"></i>
+      <span>Classic</span>
+    </button>
+    <button class="mode-button mode-button--blitz" type="button" aria-pressed="false">
+      <i data-lucide="zap" aria-hidden="true"></i>
+      <span>Blitz</span>
+    </button>
+    <button class="mode-button mode-button--endless" type="button" aria-pressed="false">
+      <i data-lucide="infinity" aria-hidden="true"></i>
+      <span>Endless</span>
+    </button>
+  </div>
+
+  <div class="start-area">
+    <button class="start-button">Start</button>
+  </div>
 
 </div>
+
+<script>
+  lucide.createIcons();
+
+  const modeButtons = document.querySelector('.mode-buttons');
+  const modeOptions = document.querySelectorAll('.mode-button');
+
+  modeOptions.forEach((button, index) => {
+    button.addEventListener('click', () => {
+      modeOptions.forEach((modeButton) => {
+        modeButton.classList.remove('is-selected');
+        modeButton.setAttribute('aria-pressed', 'false');
+      });
+
+      button.classList.add('is-selected');
+      button.setAttribute('aria-pressed', 'true');
+      modeButtons.style.setProperty('--selected-index', index);
+    });
+  });
+</script>
 
 </body>
 </html>
