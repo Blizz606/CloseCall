@@ -18,6 +18,9 @@
       --text: #08090b;
       --muted: #8490a7;
       --line: #dfe3ea;
+      --surface: rgba(255, 255, 255, 0.94);
+      --radius-card: 56px;
+      --shadow-card: 0 24px 54px rgba(51, 64, 94, 0.14);
     }
 
     * {
@@ -30,8 +33,11 @@
       display: grid;
       place-items: center;
       overflow-x: hidden;
+      padding: 96px 0 32px;
       font-family: Inter, system-ui, sans-serif;
-      background: url("images/bg_1.png") center / cover fixed no-repeat;
+      background:
+        linear-gradient(rgba(245, 249, 255, 0.18), rgba(245, 249, 255, 0.18)),
+        url("../images/Background.png") center / cover fixed no-repeat;
     }
 
     .game {
@@ -39,11 +45,62 @@
       width: min(1495px, calc(100% - 48px));
       display: grid;
       grid-template-columns: 1.28fr 0.82fr;
-      gap: 62px;
-      padding: 52px 0;
+      gap: 46px;
+      padding: 38px 0;
       transition:
         grid-template-columns 760ms cubic-bezier(0.22, 1, 0.36, 1),
         gap 760ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .topbar {
+      position: absolute;
+      top: -74px;
+      left: 0;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      height: 72px;
+      padding: 0 30px;
+      box-sizing: border-box;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.78);
+      box-shadow: 0 12px 28px rgba(51, 64, 94, 0.1);
+      backdrop-filter: blur(14px);
+    }
+
+    .stat {
+      min-width: 0;
+      padding: 0;
+      color: #8490a7;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .stat strong {
+      margin-left: 5px;
+      color: #08090b;
+      font-size: 18px;
+    }
+
+    .stat i {
+      margin-right: 6px;
+      font-size: 15px;
+    }
+
+    .stat--streak i {
+      color: #ff7075;
+    }
+
+    .stat--score i {
+      color: #e3a933;
+    }
+
+    .stat--time i {
+      color: var(--blue);
     }
 
     .next-progress {
@@ -83,16 +140,17 @@
 
     .card {
       min-height: 725px;
-      border-radius: 72px;
-      box-shadow: 0 24px 54px rgba(51, 64, 94, 0.14);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
     }
 
     .question-card {
       position: relative;
       z-index: 2;
       overflow: hidden;
-      padding: 70px 96px;
-      background: rgba(255, 255, 255, 0.96);
+      padding: 62px 76px;
+      background: var(--surface);
+      border: 1px solid rgba(255, 255, 255, 0.8);
     }
 
     .question-card > * {
@@ -240,7 +298,7 @@
     }
 
     .game.is-advancing .question-card {
-      border-radius: 72px;
+      border-radius: var(--radius-card);
     }
 
     .game.is-advancing .image-card {
@@ -264,9 +322,9 @@
       display: inline-flex;
       align-items: center;
       gap: 11px;
-      padding: 12px 19px;
+      padding: 10px 16px;
       border-radius: 999px;
-      font-size: 19px;
+      font-size: 16px;
       font-weight: 600;
     }
 
@@ -292,12 +350,12 @@
 
     h1 {
       max-width: 670px;
-      margin: 105px 0 35px;
+      margin: 86px 0 28px;
       color: var(--text);
-      font-size: clamp(52px, 5.2vw, 79px);
+      font-size: clamp(48px, 4.6vw, 72px);
       font-weight: 800;
-      line-height: 1.08;
-      letter-spacing: -4.8px;
+      line-height: 1.06;
+      letter-spacing: -3.8px;
     }
 
     h1 span {
@@ -307,15 +365,16 @@
     .subtitle {
       margin: 0;
       color: var(--muted);
-      font-size: 28px;
-      letter-spacing: -0.8px;
+      font-size: 23px;
+      line-height: 1.45;
+      letter-spacing: -0.5px;
     }
 
     form {
       display: flex;
-      gap: 32px;
+      gap: 20px;
       align-items: center;
-      margin-top: 65px;
+      margin-top: 48px;
     }
 
     .input-wrap {
@@ -325,15 +384,15 @@
 
     input {
       width: 100%;
-      height: 111px;
-      padding: 0 83px 0 88px;
-      border: 3px solid var(--line);
-      border-radius: 30px;
+      height: 96px;
+      padding: 0 76px 0 78px;
+      border: 2px solid var(--line);
+      border-radius: 26px;
       outline: 0;
       color: var(--text);
       font: inherit;
-      font-size: 28px;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      font-size: 25px;
+      transition: border-color 220ms ease, box-shadow 220ms ease;
     }
 
     input::placeholder {
@@ -347,8 +406,8 @@
 
     .ruler {
       position: absolute;
-      top: 39px;
-      left: 31px;
+      top: 33px;
+      left: 28px;
       color: #8b96aa;
       font-size: 28px;
       pointer-events: none;
@@ -356,24 +415,24 @@
 
     .unit {
       position: absolute;
-      top: 35px;
-      right: 30px;
+      top: 30px;
+      right: 28px;
       color: #909bae;
       font-size: 28px;
       pointer-events: none;
     }
 
     button {
-      width: 111px;
-      height: 111px;
+      width: 96px;
+      height: 96px;
       flex: 0 0 auto;
       border: 0;
-      border-radius: 30px;
+      border-radius: 26px;
       cursor: pointer;
       color: #fff;
       background: var(--blue);
       box-shadow: 0 13px 25px rgba(47, 115, 246, 0.25);
-      font-size: 48px;
+      font-size: 42px;
       transition:
         transform 500ms cubic-bezier(0.22, 1, 0.36, 1),
         background-color 500ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -454,6 +513,25 @@
         grid-template-columns: 1fr;
         gap: 24px;
         padding: 26px 0;
+      }
+
+      .topbar {
+        top: -56px;
+        height: 60px;
+        padding: 0 20px;
+      }
+
+      .stat {
+        font-size: 13px;
+      }
+
+      .stat strong {
+        font-size: 15px;
+      }
+
+      .stat i {
+        margin-right: 3px;
+        font-size: 12px;
       }
 
       .next-progress {
@@ -562,6 +640,12 @@
 
 <body>
   <main class="game">
+    <div class="topbar" aria-label="Game stats">
+      <div class="stat stat--streak"><i class="fa-solid fa-fire" aria-hidden="true"></i>Streak <strong id="streak">0</strong></div>
+      <div class="stat stat--score"><i class="fa-solid fa-trophy" aria-hidden="true"></i>Score <strong id="score">0</strong></div>
+      <div class="stat stat--time"><i class="fa-solid fa-clock" aria-hidden="true"></i>Avg. time <strong id="averageTime">0.0s</strong></div>
+    </div>
+
     <section class="card question-card">
       <div class="next-progress" aria-label="Time until next question">
         <span class="next-progress-fill"></span>
@@ -678,6 +762,25 @@
     const offBy = document.getElementById("offBy");
     const yourBar = document.querySelector(".loading-bar--red");
     const realBar = document.querySelector(".loading-bar--blue");
+    const streakValue = document.getElementById("streak");
+    const scoreValue = document.getElementById("score");
+    const averageTimeValue = document.getElementById("averageTime");
+    let streak = 0;
+    let score = 0;
+    let totalAnswerTime = 0;
+    let answeredQuestions = 0;
+    let questionStartedAt = performance.now();
+
+    function calculateRoundScore(diff, answer, answerTime, currentStreak) {
+      const accuracy = Math.max(0, 1 - diff / answer);
+      const accuracyPoints = Math.round(accuracy * 100);
+      const speedBonus = Math.round(
+        Math.max(0, 25 * (1 - Math.min(answerTime, 25) / 25)) * accuracy
+      );
+      const streakMultiplier = 1 + Math.min(Math.max(currentStreak - 1, 0), 10) * 0.05;
+
+      return Math.round((accuracyPoints + speedBonus) * streakMultiplier);
+    }
 
     function renderQuestion() {
       const item = questions[current];
@@ -698,6 +801,7 @@
       input.value = "";
       feedback.textContent = "";
       input.focus();
+      questionStartedAt = performance.now();
     }
 
     document.getElementById("guessForm").addEventListener("submit", (event) => {
@@ -715,6 +819,23 @@
       }
 
       const diff = Math.abs(guess - item.answer);
+      const answerTime = (performance.now() - questionStartedAt) / 1000;
+      totalAnswerTime += answerTime;
+      answeredQuestions += 1;
+
+      const accuracy = Math.max(0, 1 - diff / item.answer);
+
+      if (accuracy >= 0.75) {
+        streak += 1;
+      } else {
+        streak = 0;
+      }
+
+      score += calculateRoundScore(diff, item.answer, answerTime, streak);
+
+      streakValue.textContent = streak;
+      scoreValue.textContent = score;
+      averageTimeValue.textContent = `${(totalAnswerTime / answeredQuestions).toFixed(1)}s`;
 
       if (diff === 0) {
         feedback.textContent = "Perfect! Exactly right.";
