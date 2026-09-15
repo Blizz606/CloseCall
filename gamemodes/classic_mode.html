@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CloseCall</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+
+  <style>
+    :root {
+      --blue: #2f73f6;
+      --blue-dark: #1f62e6;
+      --text: #08090b;
+      --muted: #8490a7;
+      --line: #dfe3ea;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      overflow-x: hidden;
+      font-family: Inter, system-ui, sans-serif;
+      background: url("images/bg_1.png") center / cover fixed no-repeat;
+    }
+
+    .game {
+      width: min(1495px, calc(100% - 48px));
+      display: grid;
+      grid-template-columns: 1.28fr 0.82fr;
+      gap: 62px;
+      padding: 52px 0;
+    }
+
+    .card {
+      min-height: 725px;
+      border-radius: 72px;
+      box-shadow: 0 24px 54px rgba(51, 64, 94, 0.14);
+    }
+
+    .question-card {
+      padding: 70px 96px;
+      background: rgba(255, 255, 255, 0.96);
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      padding: 12px 19px;
+      border-radius: 999px;
+      font-size: 19px;
+      font-weight: 600;
+    }
+
+    .category {
+      color: var(--blue);
+      background: #edf4ff;
+    }
+
+    .category-icon {
+      display: grid;
+      width: 24px;
+      height: 24px;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 13px;
+      background: var(--blue);
+    }
+
+    .progress {
+      color: #111217;
+      background: #f1f1f3;
+    }
+
+    h1 {
+      max-width: 670px;
+      margin: 105px 0 35px;
+      color: var(--text);
+      font-size: clamp(52px, 5.2vw, 79px);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -4.8px;
+    }
+
+    h1 span {
+      color: var(--blue);
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 28px;
+      letter-spacing: -0.8px;
+    }
+
+    form {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+      margin-top: 65px;
+    }
+
+    .input-wrap {
+      position: relative;
+      width: min(100%, 548px);
+    }
+
+    input {
+      width: 100%;
+      height: 111px;
+      padding: 0 83px 0 88px;
+      border: 3px solid var(--line);
+      border-radius: 30px;
+      outline: 0;
+      color: var(--text);
+      font: inherit;
+      font-size: 28px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input::placeholder {
+      color: #c8cbd1;
+    }
+
+    input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 5px #eaf1ff;
+    }
+
+    .ruler {
+      position: absolute;
+      top: 35px;
+      left: 31px;
+      color: #8b96aa;
+      font-size: 28px;
+      pointer-events: none;
+    }
+
+    .unit {
+      position: absolute;
+      top: 35px;
+      right: 30px;
+      color: #909bae;
+      font-size: 28px;
+      pointer-events: none;
+    }
+
+    button {
+      width: 111px;
+      height: 111px;
+      flex: 0 0 auto;
+      border: 0;
+      border-radius: 30px;
+      cursor: pointer;
+      color: #fff;
+      background: var(--blue);
+      box-shadow: 0 13px 25px rgba(47, 115, 246, 0.25);
+      font-size: 48px;
+      transition: transform 0.18s, background 0.18s;
+    }
+
+    button:hover {
+      background: var(--blue-dark);
+      transform: translateY(-4px);
+    }
+
+    button:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .feedback {
+      min-height: 31px;
+      margin: 27px 0 0;
+      color: var(--blue);
+      font-size: 20px;
+      font-weight: 650;
+    }
+
+    .image-card {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(81, 189, 226, 0.16), rgba(18, 33, 42, 0.12)),
+        url("https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1100&q=90")
+        center / cover;
+    }
+
+    .image-card::after {
+      position: absolute;
+      inset: 0;
+      content: "";
+      background: linear-gradient(to bottom, transparent 55%, rgba(5, 20, 16, 0.15));
+      pointer-events: none;
+    }
+
+    @media (max-width: 980px) {
+      .game {
+        width: min(650px, calc(100% - 28px));
+        grid-template-columns: 1fr;
+        gap: 24px;
+        padding: 26px 0;
+      }
+
+      .card {
+        min-height: auto;
+        border-radius: 45px;
+      }
+
+      .question-card {
+        min-height: 565px;
+        padding: 42px 34px;
+      }
+
+      .image-card {
+        min-height: 460px;
+      }
+
+      h1 {
+        margin: 65px 0 23px;
+        font-size: clamp(48px, 12vw, 68px);
+        letter-spacing: -3.3px;
+      }
+
+      .subtitle {
+        font-size: 20px;
+      }
+
+      form {
+        gap: 16px;
+        margin-top: 40px;
+      }
+
+      input,
+      button {
+        height: 82px;
+        border-radius: 23px;
+      }
+
+      input {
+        padding-left: 67px;
+        font-size: 22px;
+      }
+
+      button {
+        width: 82px;
+        font-size: 39px;
+      }
+
+      .ruler {
+        top: 25px;
+        left: 23px;
+        font-size: 22px;
+      }
+
+      .unit {
+        top: 23px;
+        font-size: 22px;
+      }
+
+      .pill {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="game">
+    <section class="card question-card">
+      <header class="header">
+        <div class="pill category">
+          <span class="category-icon">
+            <i id="categoryIcon" class="fa-solid fa-landmark"></i>
+          </span>
+          <span id="categoryName">Landmarks</span>
+        </div>
+
+        <div class="pill progress" id="progress">1 / 10</div>
+      </header>
+
+      <h1 id="question">
+        How high is the<br />
+        <span>Eiffel Tower</span>
+      </h1>
+
+      <p class="subtitle" id="subtitle">
+        Take a guess. Enter your answer in meters
+      </p>
+
+      <form id="guessForm">
+        <div class="input-wrap">
+          <i class="fa-solid fa-ruler ruler"></i>
+
+          <input
+            id="guess"
+            type="number"
+            min="0"
+            inputmode="numeric"
+            placeholder="Enter a number..."
+            autocomplete="off"
+            autofocus
+          />
+
+          <span class="unit" id="unit">m</span>
+        </div>
+
+        <button type="submit" aria-label="Submit answer">
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </form>
+
+      <p class="feedback" id="feedback" aria-live="polite"></p>
+    </section>
+
+    <aside class="card image-card" aria-label="Question image"></aside>
+  </main>
+
+  <script>
+    const questions = [
+      {
+        category: "Landmarks",
+        icon: "fa-landmark",
+        question: "How high is the<br><span>Eiffel Tower</span>",
+        hint: "Take a guess. Enter your answer in meters",
+        answer: 330,
+        unit: "m",
+        image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1100&q=90"
+      },
+      {
+        category: "Nature",
+        icon: "fa-tree",
+        question: "How old is the<br><span>oldest living tree?</span>",
+        hint: "Take a guess. Enter your answer in years",
+        answer: 4850,
+        unit: "years",
+        image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1100&q=90"
+      },
+      {
+        category: "Technology",
+        icon: "fa-microchip",
+        question: "How many<br><span>transistors are in a chip?</span>",
+        hint: "Take a guess. Enter a number",
+        answer: 114000000000,
+        unit: "",
+        image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1100&q=90"
+      },
+      {
+        category: "Space",
+        icon: "fa-rocket",
+        question: "How far away is the<br><span>Moon?</span>",
+        hint: "Take a guess. Enter your answer in km",
+        answer: 384400,
+        unit: "km",
+        image: "https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?auto=format&fit=crop&w=1100&q=90"
+      },
+      {
+        category: "Sports",
+        icon: "fa-futbol",
+        question: "How fast is the<br><span>fastest football shot?</span>",
+        hint: "Take a guess. Enter your answer in km/h",
+        answer: 210,
+        unit: "km/h",
+        image: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1100&q=90"
+      }
+    ];
+
+    let current = 0;
+
+    const icon = document.getElementById("categoryIcon");
+    const category = document.getElementById("categoryName");
+    const question = document.getElementById("question");
+    const hint = document.getElementById("subtitle");
+    const unit = document.getElementById("unit");
+    const image = document.querySelector(".image-card");
+    const input = document.getElementById("guess");
+    const feedback = document.getElementById("feedback");
+    const progress = document.getElementById("progress");
+
+    function renderQuestion() {
+      const item = questions[current];
+
+      icon.className = `fa-solid ${item.icon}`;
+      category.textContent = item.category;
+      question.innerHTML = item.question;
+      hint.textContent = item.hint;
+      unit.textContent = item.unit;
+
+      image.style.backgroundImage =
+        `linear-gradient(180deg, rgba(81,189,226,.16), rgba(18,33,42,.12)), url("${item.image}")`;
+
+      progress.textContent = `${current + 1} / 10`;
+
+      input.value = "";
+      feedback.textContent = "";
+      input.focus();
+    }
+
+    document.getElementById("guessForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const item = questions[current];
+      const guess = Number(input.value);
+
+      if (!input.value || guess < 0) {
+        feedback.textContent = "Enter a valid number first.";
+        input.focus();
+        return;
+      }
+
+      const diff = Math.abs(guess - item.answer);
+
+      if (diff === 0) {
+        feedback.textContent = "Perfect! Exactly right.";
+      } else if (diff / item.answer <= 0.1) {
+        feedback.textContent =
+          `So close — only ${Math.round(diff).toLocaleString()} ${item.unit} away!`;
+      } else {
+        feedback.textContent =
+          `Answer: ${item.answer.toLocaleString()} ${item.unit}. Next question loading…`;
+      }
+
+      window.setTimeout(() => {
+        current = (current + 1) % questions.length;
+        renderQuestion();
+      }, diff === 0 || diff / item.answer <= 0.1 ? 1800 : 2400);
+    });
+  </script>
+</body>
+</html>
