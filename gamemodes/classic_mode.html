@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CloseCall</title>
+  <title>CloseCall | Classic Mode</title>
+
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -34,11 +35,50 @@
     }
 
     .game {
+      position: relative;
       width: min(1495px, calc(100% - 48px));
       display: grid;
       grid-template-columns: 1.28fr 0.82fr;
       gap: 62px;
       padding: 52px 0;
+      transition:
+        grid-template-columns 760ms cubic-bezier(0.22, 1, 0.36, 1),
+        gap 760ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .next-progress {
+      position: absolute;
+      top: 0;
+      left: -8px;
+      z-index: 4;
+      width: calc(100% + 16px);
+      height: 16px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #f0f1f3;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 220ms ease;
+    }
+
+    .next-progress-fill {
+      display: block;
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: #d5d6d8;
+      transition: none;
+    }
+
+    .game.is-advancing .next-progress-fill {
+      width: 100%;
+      transition: width 5000ms linear 760ms;
+    }
+
+    .game.is-advancing .next-progress {
+      opacity: 1;
+      visibility: visible;
+      transition-delay: 760ms;
     }
 
     .card {
@@ -48,8 +88,170 @@
     }
 
     .question-card {
+      position: relative;
+      z-index: 2;
+      overflow: hidden;
       padding: 70px 96px;
       background: rgba(255, 255, 255, 0.96);
+    }
+
+    .question-card > * {
+      transition:
+        opacity 260ms ease,
+        transform 760ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .loading-bars {
+      position: absolute;
+      inset: auto auto 0 50%;
+      z-index: 3;
+      display: flex;
+      align-items: flex-end;
+      gap: 72px;
+      width: 392px;
+      height: 430px;
+      opacity: 0;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .result-summary {
+      position: absolute;
+      top: 58px;
+      left: 0;
+      z-index: 3;
+      width: 100%;
+      margin: 0;
+      color: #111217;
+      text-align: center;
+      font-size: clamp(38px, 5vw, 64px);
+      font-weight: 400;
+      letter-spacing: -2.2px;
+      opacity: 0;
+      transform: translateY(-10px);
+      pointer-events: none;
+      transition:
+        opacity 240ms ease,
+        transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .result-summary span {
+      color: #ff7075;
+      font-weight: 600;
+    }
+
+    .off-by {
+      position: absolute;
+      top: 154px;
+      left: 0;
+      z-index: 3;
+      width: 100%;
+      margin: 0;
+      color: #8490a7;
+      text-align: center;
+      font-size: 32px;
+      opacity: 0;
+      transform: translateY(-8px);
+      pointer-events: none;
+      transition:
+        opacity 240ms ease,
+        transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .loading-bar {
+      display: block;
+      width: 160px;
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 24px;
+      box-sizing: border-box;
+      color: #ffffff;
+      font-size: 18px;
+      line-height: 1.25;
+      text-align: center;
+      border-radius: 28px 28px 0 0;
+      transform: scaleY(0);
+      transform-origin: bottom;
+    }
+
+    .loading-bar.is-compact {
+      padding-bottom: 0;
+      font-size: 0;
+    }
+
+    .loading-bar--blue {
+      height: var(--real-height, 57%);
+      background: #4e7df7;
+    }
+
+    .loading-bar--red {
+      height: var(--your-height, 80%);
+      background: #ff7075;
+    }
+
+    .game.is-advancing .question-card > *:not(.loading-bars):not(.result-summary):not(.off-by):not(.next-progress) {
+      opacity: 0;
+      transform: translateX(-18px);
+      transition-delay: 760ms;
+      transition-duration: 140ms, 260ms;
+    }
+
+    .game.is-advancing .loading-bars {
+      opacity: 1;
+      transition: opacity 220ms ease 760ms;
+    }
+
+    .game.is-advancing .result-summary {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: 760ms;
+    }
+
+    .game.is-advancing .off-by {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: 760ms;
+    }
+
+    .game.is-advancing .loading-bar {
+      animation: bar-rise 900ms cubic-bezier(0.22, 1, 0.36, 1) 760ms both;
+    }
+
+    .game.is-advancing .loading-bar--red {
+      animation-delay: 860ms;
+    }
+
+    @keyframes bar-rise {
+      from {
+        transform: scaleY(0);
+      }
+      to {
+        transform: scaleY(1);
+      }
+    }
+
+    .image-card {
+      z-index: 1;
+      transition:
+        opacity 560ms ease,
+        transform 760ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .game.is-advancing .question-card {
+      border-radius: 72px;
+    }
+
+    .game.is-advancing .image-card {
+      opacity: 0;
+      transform: translateX(12px) scale(1.02);
+      transition-delay: 480ms;
+    }
+
+    .game.is-advancing {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0fr);
+      gap: 0;
     }
 
     .header {
@@ -204,9 +406,19 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
+      .game,
+      .next-progress,
+      .next-progress-fill,
       button,
-      button i {
+      button i,
+      .question-card > *,
+      .image-card,
+      .loading-bars,
+      .loading-bar,
+      .result-summary,
+      .off-by {
         transition: none;
+        animation: none;
       }
     }
 
@@ -243,6 +455,25 @@
         padding: 26px 0;
       }
 
+      .next-progress {
+        left: -6px;
+        width: calc(100% + 12px);
+        height: 11px;
+      }
+
+      .game.is-advancing .question-card {
+        transform: none;
+      }
+
+      .game.is-advancing {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      .game.is-advancing .image-card {
+        transform: translateY(16px);
+      }
+
       .card {
         min-height: auto;
         border-radius: 45px;
@@ -251,6 +482,28 @@
       .question-card {
         min-height: 565px;
         padding: 42px 34px;
+      }
+
+      .loading-bars {
+        gap: 24px;
+        width: 216px;
+        height: 270px;
+      }
+
+      .loading-bar {
+        width: 96px;
+        border-radius: 18px 18px 0 0;
+      }
+
+      .result-summary {
+        top: 40px;
+        font-size: clamp(29px, 7.5vw, 44px);
+        letter-spacing: -1.4px;
+      }
+
+      .off-by {
+        top: 122px;
+        font-size: 23px;
       }
 
       .image-card {
@@ -309,6 +562,10 @@
 <body>
   <main class="game">
     <section class="card question-card">
+      <div class="next-progress" aria-label="Time until next question">
+        <span class="next-progress-fill"></span>
+      </div>
+
       <header class="header">
         <div class="pill category">
           <span class="category-icon">
@@ -351,6 +608,14 @@
         </button>
       </form>
 
+      <p class="result-summary" id="resultSummary"></p>
+      <p class="off-by" id="offBy"></p>
+
+      <div class="loading-bars" aria-hidden="true">
+        <span class="loading-bar loading-bar--red">Your<br />Answer</span>
+        <span class="loading-bar loading-bar--blue">Real<br />Answer</span>
+      </div>
+
       <p class="feedback" id="feedback" aria-live="polite"></p>
     </section>
 
@@ -358,7 +623,7 @@
   </main>
 
   <script>
-    const questions = [
+    let questions = [
       {
         category: "Landmarks",
         icon: "fa-landmark",
@@ -406,6 +671,42 @@
       }
     ];
 
+    const SUPABASE_URL = "https://fjjhpratbgtovbdelxdy.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_3UZIsIA3OzDdDpioKlJR1g_njcIfY1R";
+
+    async function loadQuestionsFromSupabase() {
+      try {
+        const response = await fetch(
+          `${SUPABASE_URL}/rest/v1/questions?mode=eq.classic&is_active=eq.true&order=sort_order.asc`,
+          {
+            headers: {
+              apikey: SUPABASE_KEY,
+              Authorization: `Bearer ${SUPABASE_KEY}`
+            }
+          }
+        );
+
+        if (!response.ok) throw new Error(`Supabase returned ${response.status}`);
+
+        const rows = await response.json();
+        if (!rows.length) return;
+
+        questions = rows.map((row) => ({
+          category: row.category,
+          icon: row.icon.startsWith("fa-") ? row.icon : `fa-${row.icon}`,
+          question: row.question_highlight
+            ? `${row.question_text}<br><span>${row.question_highlight}</span>`
+            : row.question_text,
+          hint: row.hint,
+          answer: Number(row.answer),
+          unit: row.unit || "",
+          image: row.image_url || ""
+        }));
+      } catch (error) {
+        console.warn("Supabase questions unavailable. Using local fallback.", error);
+      }
+    }
+
     let current = 0;
 
     const icon = document.getElementById("categoryIcon");
@@ -417,6 +718,11 @@
     const input = document.getElementById("guess");
     const feedback = document.getElementById("feedback");
     const progress = document.getElementById("progress");
+    const game = document.querySelector(".game");
+    const resultSummary = document.getElementById("resultSummary");
+    const offBy = document.getElementById("offBy");
+    const yourBar = document.querySelector(".loading-bar--red");
+    const realBar = document.querySelector(".loading-bar--blue");
 
     function renderQuestion() {
       const item = questions[current];
@@ -426,6 +732,8 @@
       question.innerHTML = item.question;
       hint.textContent = item.hint;
       unit.textContent = item.unit;
+      resultSummary.textContent = "";
+      offBy.textContent = "";
 
       image.style.backgroundImage =
         `linear-gradient(180deg, rgba(81,189,226,.16), rgba(18,33,42,.12)), url("${item.image}")`;
@@ -439,6 +747,8 @@
 
     document.getElementById("guessForm").addEventListener("submit", (event) => {
       event.preventDefault();
+
+      if (game.classList.contains("is-advancing")) return;
 
       const item = questions[current];
       const guess = Number(input.value);
@@ -461,11 +771,28 @@
           `Answer: ${item.answer.toLocaleString()} ${item.unit}. Next question loading…`;
       }
 
+      const answerLabel = item.unit ? `${item.answer.toLocaleString()}${item.unit}` : item.answer.toLocaleString();
+      resultSummary.innerHTML = `The answer is <span>${answerLabel}</span>`;
+      const differenceLabel = diff === 0
+        ? "You were exactly right"
+        : `You were off by ${diff.toLocaleString()}${item.unit ? ` ${item.unit}` : ""}`;
+      offBy.textContent = differenceLabel;
+      const realHeight = 0.57;
+      const yourHeight = Math.min(0.96, (guess / item.answer) * realHeight);
+      yourBar.style.setProperty("--your-height", `${yourHeight * 100}%`);
+      realBar.style.setProperty("--real-height", `${realHeight * 100}%`);
+      yourBar.classList.toggle("is-compact", yourHeight < 0.18);
+
+      game.classList.add("is-advancing");
+
       window.setTimeout(() => {
         current = (current + 1) % questions.length;
         renderQuestion();
-      }, diff === 0 || diff / item.answer <= 0.1 ? 1800 : 2400);
+        game.classList.remove("is-advancing");
+      }, 5760);
     });
+
+    loadQuestionsFromSupabase().then(renderQuestion);
   </script>
 </body>
 </html>
