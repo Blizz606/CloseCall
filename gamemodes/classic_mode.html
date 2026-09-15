@@ -79,9 +79,8 @@
       height: 24px;
       place-items: center;
       border-radius: 50%;
-      color: #fff;
-      font-size: 13px;
-      background: var(--blue);
+      color: var(--blue);
+      font-size: 18px;
     }
 
     .progress {
@@ -146,7 +145,7 @@
 
     .ruler {
       position: absolute;
-      top: 35px;
+      top: 39px;
       left: 31px;
       color: #8b96aa;
       font-size: 28px;
@@ -173,16 +172,42 @@
       background: var(--blue);
       box-shadow: 0 13px 25px rgba(47, 115, 246, 0.25);
       font-size: 48px;
-      transition: transform 0.18s, background 0.18s;
+      transition:
+        transform 500ms cubic-bezier(0.22, 1, 0.36, 1),
+        background-color 500ms cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 500ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    button i {
+      display: inline-block;
+      transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     button:hover {
-      background: var(--blue-dark);
-      transform: translateY(-4px);
+      background: #397bf3;
+      transform: translateY(-4px) scale(1.015);
+      box-shadow: 0 18px 32px rgba(47, 115, 246, 0.28);
+    }
+
+    button:hover i {
+      transform: translateX(4px);
     }
 
     button:active {
-      transform: translateY(1px) scale(0.98);
+      transform: translateY(-1px) scale(0.98);
+      box-shadow: 0 8px 16px rgba(47, 115, 246, 0.22);
+    }
+
+    button:focus-visible {
+      outline: 4px solid rgba(47, 115, 246, 0.22);
+      outline-offset: 5px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      button,
+      button i {
+        transition: none;
+      }
     }
 
     .feedback {
