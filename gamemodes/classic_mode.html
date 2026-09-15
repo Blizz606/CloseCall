@@ -569,22 +569,17 @@
       <header class="header">
         <div class="pill category">
           <span class="category-icon">
-            <i id="categoryIcon" class="fa-solid fa-landmark"></i>
+            <i id="categoryIcon" class="fa-solid fa-circle-question"></i>
           </span>
-          <span id="categoryName">Landmarks</span>
+          <span id="categoryName"></span>
         </div>
 
-        <div class="pill progress" id="progress">1 / 10</div>
+        <div class="pill progress" id="progress">—</div>
       </header>
 
-      <h1 id="question">
-        How high is the<br />
-        <span>Eiffel Tower</span>
-      </h1>
+      <h1 id="question"></h1>
 
-      <p class="subtitle" id="subtitle">
-        Take a guess. Enter your answer in meters
-      </p>
+      <p class="subtitle" id="subtitle"></p>
 
       <form id="guessForm">
         <div class="input-wrap">
@@ -623,53 +618,7 @@
   </main>
 
   <script>
-    let questions = [
-      {
-        category: "Landmarks",
-        icon: "fa-landmark",
-        question: "How high is the<br><span>Eiffel Tower</span>",
-        hint: "Take a guess. Enter your answer in meters",
-        answer: 330,
-        unit: "m",
-        image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1100&q=90"
-      },
-      {
-        category: "Nature",
-        icon: "fa-tree",
-        question: "How old is the<br><span>oldest living tree?</span>",
-        hint: "Take a guess. Enter your answer in years",
-        answer: 4850,
-        unit: "years",
-        image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1100&q=90"
-      },
-      {
-        category: "Technology",
-        icon: "fa-microchip",
-        question: "How many<br><span>transistors are in a chip?</span>",
-        hint: "Take a guess. Enter a number",
-        answer: 114000000000,
-        unit: "",
-        image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1100&q=90"
-      },
-      {
-        category: "Space",
-        icon: "fa-rocket",
-        question: "How far away is the<br><span>Moon?</span>",
-        hint: "Take a guess. Enter your answer in km",
-        answer: 384400,
-        unit: "km",
-        image: "https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?auto=format&fit=crop&w=1100&q=90"
-      },
-      {
-        category: "Sports",
-        icon: "fa-futbol",
-        question: "How fast is the<br><span>fastest football shot?</span>",
-        hint: "Take a guess. Enter your answer in km/h",
-        answer: 210,
-        unit: "km/h",
-        image: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1100&q=90"
-      }
-    ];
+    let questions = [];
 
     const SUPABASE_URL = "https://fjjhpratbgtovbdelxdy.supabase.co";
     const SUPABASE_KEY = "sb_publishable_3UZIsIA3OzDdDpioKlJR1g_njcIfY1R";
@@ -689,7 +638,7 @@
         if (!response.ok) throw new Error(`Supabase returned ${response.status}`);
 
         const rows = await response.json();
-        if (!rows.length) return;
+        if (!rows.length) throw new Error("No active classic questions found");
 
         questions = rows.map((row) => ({
           category: row.category,
@@ -702,8 +651,13 @@
           unit: row.unit || "",
           image: row.image_url || ""
         }));
+        return true;
       } catch (error) {
-        console.warn("Supabase questions unavailable. Using local fallback.", error);
+        console.error("Supabase questions unavailable.", error);
+        feedback.textContent = "No questions available. Please check the database.";
+        input.disabled = true;
+        document.querySelector("#guessForm button").disabled = true;
+        return false;
       }
     }
 
@@ -738,7 +692,7 @@
       image.style.backgroundImage =
         `linear-gradient(180deg, rgba(81,189,226,.16), rgba(18,33,42,.12)), url("${item.image}")`;
 
-      progress.textContent = `${current + 1} / 10`;
+      progress.textContent = `${current + 1} / ${questions.length}`;
 
       input.value = "";
       feedback.textContent = "";
@@ -792,7 +746,9 @@
       }, 5760);
     });
 
-    loadQuestionsFromSupabase().then(renderQuestion);
+    loadQuestionsFromSupabase().then((loaded) => {
+      if (loaded) renderQuestion();
+    });
   </script>
 </body>
 </html>
