@@ -29,22 +29,22 @@
 
   <div class="mode-buttons">
     <span class="mode-indicator" aria-hidden="true"></span>
-    <button class="mode-button mode-button--classic is-selected" type="button" aria-pressed="true">
+    <button class="mode-button mode-button--classic is-selected" type="button" data-mode="classic" data-path="gamemodes/classic_mode.html" aria-pressed="true">
       <i data-lucide="target" aria-hidden="true"></i>
       <span>Classic</span>
     </button>
-    <button class="mode-button mode-button--blitz" type="button" aria-pressed="false">
+    <button class="mode-button mode-button--blitz" type="button" data-mode="blitz" data-path="gamemodes/blitz_mode.html" aria-pressed="false">
       <i data-lucide="zap" aria-hidden="true"></i>
       <span>Blitz</span>
     </button>
-    <button class="mode-button mode-button--endless" type="button" aria-pressed="false">
+    <button class="mode-button mode-button--endless" type="button" data-mode="endless" data-path="gamemodes/endless_mode.html" aria-pressed="false">
       <i data-lucide="infinity" aria-hidden="true"></i>
       <span>Endless</span>
     </button>
   </div>
 
   <div class="start-area">
-    <button class="start-button">Start</button>
+    <button class="start-button" id="startButton" type="button">Start</button>
   </div>
 
 </div>
@@ -54,6 +54,8 @@
 
   const modeButtons = document.querySelector('.mode-buttons');
   const modeOptions = document.querySelectorAll('.mode-button');
+  const startButton = document.getElementById('startButton');
+  let selectedPath = document.querySelector('.mode-button.is-selected').dataset.path;
 
   modeOptions.forEach((button, index) => {
     button.addEventListener('click', () => {
@@ -65,7 +67,12 @@
       button.classList.add('is-selected');
       button.setAttribute('aria-pressed', 'true');
       modeButtons.style.setProperty('--selected-index', index);
+      selectedPath = button.dataset.path;
     });
+  });
+
+  startButton.addEventListener('click', () => {
+    window.location.href = selectedPath;
   });
 </script>
 
