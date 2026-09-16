@@ -958,6 +958,7 @@
 
   <script>
     let questions = [];
+    let allClassicQuestions = [];
 
     const SUPABASE_URL = "https://fjjhpratbgtovbdelxdy.supabase.co";
     const SUPABASE_KEY = "sb_publishable_3UZIsIA3OzDdDpioKlJR1g_njcIfY1R";
@@ -1032,7 +1033,7 @@
         const rows = await response.json();
         if (!rows.length) throw new Error("No active classic questions found");
 
-        questions = rows.map((row) => ({
+        allClassicQuestions = rows.map((row) => ({
           category: row.category,
           icon: row.icon.startsWith("fa-") ? row.icon : `fa-${row.icon}`,
           question: row.question_highlight
@@ -1044,6 +1045,8 @@
           unit: row.unit || "",
           image: row.image_url || ""
         }));
+
+        selectRoundQuestions();
         return true;
       } catch (error) {
         console.error("Supabase questions unavailable.", error);
@@ -1052,6 +1055,18 @@
         document.querySelector("#guessForm button").disabled = true;
         return false;
       }
+    }
+
+    function selectRoundQuestions() {
+      const shuffledQuestions = [...allClassicQuestions];
+
+      for (let index = shuffledQuestions.length - 1; index > 0; index -= 1) {
+        const randomIndex = Math.floor(Math.random() * (index + 1));
+        [shuffledQuestions[index], shuffledQuestions[randomIndex]] =
+          [shuffledQuestions[randomIndex], shuffledQuestions[index]];
+      }
+
+      questions = shuffledQuestions.slice(0, Math.min(10, shuffledQuestions.length));
     }
 
     let current = 0;
@@ -1140,6 +1155,7 @@
     }
 
     function playAgain() {
+      selectRoundQuestions();
       current = 0;
       streak = 0;
       score = 0;
