@@ -1,81 +1,904 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="CloseCall is a fast paced estimation game whre you guess real work numbers and then see how close you are">
-    <meta name="theme-color" content="#0a0a0a">
+
     <title>CloseCall</title>
 
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="/favicon.png">
-
-    <meta property="og:title" content="CloseCall - How close can you get">
-    <meta property="og:description" content="CloseCall is a fast paced estimation game where you guess real work numbers and then see how close you are">
-    <meta property="og:image" content="/favicon.png">
-    <meta property="og:type" content="website">
-    <meta name="twitter:card" content="summary_large_image">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
+    <style>
+        /* =========================================================
+           RESET
+        ========================================================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            overflow: hidden;
+
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "SF Pro Display",
+                "SF Pro Text",
+                "Segoe UI",
+                sans-serif;
+
+            color: #17181b;
+
+            background:
+                #f8faff
+                url("images/Background.png")
+                center center / cover
+                no-repeat;
+
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        /* =========================================================
+           PAGE
+        ========================================================= */
+
+        .app {
+            position: relative;
+
+            width: 100vw;
+            height: 100vh;
+            height: 100svh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 32px;
+        }
+
+        /* very subtle page softness */
+        .app::before {
+            content: "";
+
+            position: absolute;
+            inset: 0;
+
+            pointer-events: none;
+
+            background:
+                radial-gradient(
+                    circle at 50% 45%,
+                    rgba(255, 255, 255, 0) 20%,
+                    rgba(255, 255, 255, 0.08) 70%,
+                    rgba(255, 255, 255, 0.14) 100%
+                );
+        }
+
+        /* =========================================================
+           CARD
+        ========================================================= */
+
+        .game-card {
+            position: relative;
+            z-index: 2;
+
+            width: min(520px, calc(100vw - 40px));
+            height: 630px;
+
+            padding:
+                38px
+                32px
+                30px;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            border-radius: 42px;
+
+            background: rgba(255, 255, 255, 0.94);
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.96);
+
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+
+            box-shadow:
+                0 34px 80px rgba(35, 50, 80, 0.10),
+                0 10px 28px rgba(35, 50, 80, 0.05);
+
+            animation:
+                cardIn
+                0.6s
+                cubic-bezier(.16, 1, .3, 1);
+        }
+
+        /* =========================================================
+           TOP STACK
+
+           Logo + fixed gap + selector.
+
+           THIS is what makes the selector stay further down.
+        ========================================================= */
+
+        .top-stack {
+            width: 100%;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            gap: 48px;
+
+            flex-shrink: 0;
+        }
+
+        /* =========================================================
+           LOGO
+        ========================================================= */
+
+        .logo-area {
+            width: 100%;
+            height: 175px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex-shrink: 0;
+
+            /*
+                Prevents the PNG from visually spilling
+                into the selector area.
+            */
+            overflow: hidden;
+        }
+
+        .logo {
+            display: block;
+
+            width: auto;
+            height: auto;
+
+            max-width: 220px;
+            max-height: 170px;
+
+            object-fit: contain;
+
+            user-select: none;
+            -webkit-user-drag: none;
+
+            filter:
+                drop-shadow(
+                    0 7px 12px
+                    rgba(18, 29, 50, 0.06)
+                );
+        }
+
+        /* =========================================================
+           MODE SELECTOR
+        ========================================================= */
+
+        .mode-selector {
+            position: relative;
+
+            width: 100%;
+            height: 104px;
+
+            flex-shrink: 0;
+
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+
+            padding: 6px;
+
+            border-radius: 30px;
+
+            background:
+                rgba(225, 226, 230, 0.92);
+
+            box-shadow:
+                inset 0 1px 2px
+                rgba(0, 0, 0, 0.025);
+
+            overflow: hidden;
+        }
+
+        /* =========================================================
+           ACTIVE PILL
+        ========================================================= */
+
+        .selection-pill {
+            position: absolute;
+
+            top: 6px;
+            bottom: 6px;
+            left: 6px;
+
+            width: calc((100% - 12px) / 3);
+
+            border-radius: 25px;
+
+            background: #ffffff;
+
+            box-shadow:
+                0 5px 14px rgba(20, 30, 48, 0.09),
+                0 1px 4px rgba(20, 30, 48, 0.04);
+
+            transition:
+                transform
+                0.42s
+                cubic-bezier(.32, .72, 0, 1);
+        }
+
+        /* =========================================================
+           MODE BUTTONS
+        ========================================================= */
+
+        .mode {
+            position: relative;
+            z-index: 2;
+
+            border: none;
+            outline: none;
+
+            background: transparent;
+
+            border-radius: 24px;
+
+            cursor: pointer;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            gap: 7px;
+
+            color: #18191d;
+
+            -webkit-tap-highlight-color: transparent;
+
+            transition:
+                transform 0.16s ease;
+        }
+
+        .mode:hover {
+            transform: translateY(-1px);
+        }
+
+        .mode:active {
+            transform: scale(0.97);
+        }
+
+        /* =========================================================
+           ICONS
+        ========================================================= */
+
+        .mode-icon {
+            width: 31px;
+            height: 31px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            transition:
+                transform 0.18s ease;
+        }
+
+        .mode-icon svg {
+            width: 27px;
+            height: 27px;
+
+            stroke-width: 1.9;
+        }
+
+        .mode.active .mode-icon {
+            transform: scale(1.05);
+        }
+
+        .classic .mode-icon {
+            color: #a545e8;
+        }
+
+        .blitz .mode-icon {
+            color: #f2c300;
+        }
+
+        .endless .mode-icon {
+            color: #1599ff;
+        }
+
+        /* =========================================================
+           LABELS
+        ========================================================= */
+
+        .mode-name {
+            font-size: 16px;
+            font-weight: 520;
+
+            letter-spacing: -0.3px;
+
+            color: #18191d;
+        }
+
+        .mode.active .mode-name {
+            font-weight: 600;
+        }
+
+        /* =========================================================
+           BUTTON AREA
+        ========================================================= */
+
+        .bottom-area {
+            width: 100%;
+
+            margin-top: auto;
+
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        /* =========================================================
+           START BUTTON
+        ========================================================= */
+
+        .start-button {
+            min-width: 170px;
+            height: 52px;
+
+            padding: 0 30px;
+
+            border: none;
+            outline: none;
+
+            border-radius: 999px;
+
+            background: #3478f6;
+
+            color: #ffffff;
+
+            font-size: 15px;
+            font-weight: 600;
+
+            letter-spacing: -0.15px;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 7px 16px
+                rgba(52, 120, 246, 0.18);
+
+            transition:
+                background 0.16s ease,
+                transform 0.16s ease,
+                box-shadow 0.16s ease;
+        }
+
+        .start-button:hover {
+            background: #2f73ef;
+
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 9px 19px
+                rgba(52, 120, 246, 0.21);
+        }
+
+        .start-button:active {
+            background: #296ce5;
+
+            transform: scale(0.97);
+
+            box-shadow:
+                0 4px 11px
+                rgba(52, 120, 246, 0.16);
+        }
+
+        .start-button:focus-visible {
+            outline:
+                4px solid
+                rgba(52, 120, 246, 0.18);
+
+            outline-offset: 4px;
+        }
+
+        .start-button:disabled {
+            cursor: wait;
+            opacity: 0.62;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* =========================================================
+           ENTRANCE
+        ========================================================= */
+
+        @keyframes cardIn {
+
+            from {
+                opacity: 0;
+
+                transform:
+                    translateY(15px)
+                    scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+
+                transform:
+                    translateY(0)
+                    scale(1);
+            }
+        }
+
+        /* =========================================================
+           TABLET
+        ========================================================= */
+
+        @media (max-width: 650px) {
+
+            .app {
+                padding: 20px;
+            }
+
+            .game-card {
+                width: min(100%, 470px);
+                height: 580px;
+
+                padding:
+                    30px
+                    24px
+                    26px;
+
+                border-radius: 38px;
+            }
+
+            .top-stack {
+                gap: 38px;
+            }
+
+            .logo-area {
+                height: 155px;
+            }
+
+            .logo {
+                max-width: 195px;
+                max-height: 150px;
+            }
+
+            .mode-selector {
+                height: 98px;
+            }
+
+            .mode-name {
+                font-size: 15px;
+            }
+
+            .mode-icon svg {
+                width: 25px;
+                height: 25px;
+            }
+
+            .start-button {
+                min-width: 165px;
+                height: 50px;
+
+                font-size: 15px;
+            }
+        }
+
+        /* =========================================================
+           MOBILE
+        ========================================================= */
+
+        @media (max-width: 430px) {
+
+            .game-card {
+                height: 530px;
+
+                padding:
+                    25px
+                    18px
+                    22px;
+
+                border-radius: 34px;
+            }
+
+            .top-stack {
+                gap: 30px;
+            }
+
+            .logo-area {
+                height: 140px;
+            }
+
+            .logo {
+                max-width: 178px;
+                max-height: 135px;
+            }
+
+            .mode-selector {
+                height: 92px;
+
+                border-radius: 27px;
+            }
+
+            .selection-pill {
+                border-radius: 22px;
+            }
+
+            .mode {
+                gap: 5px;
+            }
+
+            .mode-icon {
+                width: 27px;
+                height: 27px;
+            }
+
+            .mode-icon svg {
+                width: 23px;
+                height: 23px;
+            }
+
+            .mode-name {
+                font-size: 14px;
+            }
+
+            .start-button {
+                min-width: 155px;
+                height: 48px;
+
+                font-size: 14px;
+            }
+        }
+
+        /* =========================================================
+           ACCESSIBILITY
+        ========================================================= */
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<div class="panel">
+    <div class="app">
 
-  <div class="mode-buttons">
-    <span class="mode-indicator" aria-hidden="true"></span>
-    <button class="mode-button mode-button--classic is-selected" type="button" data-mode="classic" data-path="gamemodes/classic_mode.html" aria-pressed="true">
-      <i data-lucide="target" aria-hidden="true"></i>
-      <span>Classic</span>
-    </button>
-    <button class="mode-button mode-button--blitz" type="button" data-mode="blitz" data-path="gamemodes/blitz_mode.html" aria-pressed="false">
-      <i data-lucide="zap" aria-hidden="true"></i>
-      <span>Blitz</span>
-    </button>
-    <button class="mode-button mode-button--endless" type="button" data-mode="endless" data-path="gamemodes/endless_mode.html" aria-pressed="false">
-      <i data-lucide="infinity" aria-hidden="true"></i>
-      <span>Endless</span>
-    </button>
-  </div>
+        <main class="game-card">
 
-  <div class="start-area">
-    <button class="start-button" id="startButton" type="button">Start</button>
-  </div>
+            <!--
+                Logo and mode selector are deliberately grouped
+                so the spacing between them stays fixed.
+            -->
+            <div class="top-stack">
 
-</div>
+                <!-- LOGO -->
 
-<script>
-  lucide.createIcons();
+                <div class="logo-area">
 
-  const modeButtons = document.querySelector('.mode-buttons');
-  const modeOptions = document.querySelectorAll('.mode-button');
-  const startButton = document.getElementById('startButton');
-  let selectedPath = document.querySelector('.mode-button.is-selected').dataset.path;
+                    <img
+                        src="images/logo.png"
+                        alt="CloseCall"
+                        class="logo"
+                    >
 
-  modeOptions.forEach((button, index) => {
-    button.addEventListener('click', () => {
-      modeOptions.forEach((modeButton) => {
-        modeButton.classList.remove('is-selected');
-        modeButton.setAttribute('aria-pressed', 'false');
-      });
+                </div>
 
-      button.classList.add('is-selected');
-      button.setAttribute('aria-pressed', 'true');
-      modeButtons.style.setProperty('--selected-index', index);
-      selectedPath = button.dataset.path;
-    });
-  });
 
-  startButton.addEventListener('click', () => {
-    window.location.href = selectedPath;
-  });
-</script>
+                <!-- MODE SELECTOR -->
+
+                <div class="mode-selector">
+
+                    <div
+                        class="selection-pill"
+                        id="selectionPill"
+                    ></div>
+
+
+                    <!-- CLASSIC -->
+
+                    <button
+                        class="mode classic active"
+                        type="button"
+                        data-index="0"
+                        data-mode="classic"
+                        data-path="gamemodes/classic_mode.html"
+                        aria-pressed="true"
+                    >
+
+                        <span class="mode-icon">
+                            <i data-lucide="globe-2"></i>
+                        </span>
+
+                        <span class="mode-name">
+                            Classic
+                        </span>
+
+                    </button>
+
+
+                    <!-- BLITZ -->
+
+                    <button
+                        class="mode blitz"
+                        type="button"
+                        data-index="1"
+                        data-mode="blitz"
+                        data-path="gamemodes/blitz_mode.html"
+                        aria-pressed="false"
+                    >
+
+                        <span class="mode-icon">
+                            <i data-lucide="zap"></i>
+                        </span>
+
+                        <span class="mode-name">
+                            Blitz
+                        </span>
+
+                    </button>
+
+
+                    <!-- ENDLESS -->
+
+                    <button
+                        class="mode endless"
+                        type="button"
+                        data-index="2"
+                        data-mode="endless"
+                        data-path="gamemodes/endless_mode.html"
+                        aria-pressed="false"
+                    >
+
+                        <span class="mode-icon">
+                            <i data-lucide="infinity"></i>
+                        </span>
+
+                        <span class="mode-name">
+                            Endless
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- START -->
+
+            <div class="bottom-area">
+
+                <button
+                    class="start-button"
+                    id="startButton"
+                    type="button"
+                    disabled
+                >
+                    Start Game
+                </button>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        /* =========================================================
+           LUCIDE
+        ========================================================= */
+
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+
+
+        /* =========================================================
+           ELEMENTS
+        ========================================================= */
+
+        const modeButtons =
+            document.querySelectorAll(".mode");
+
+        const selectionPill =
+            document.getElementById("selectionPill");
+
+        const startButton =
+            document.getElementById("startButton");
+
+        const SUPABASE_URL =
+            "https://fjjhpratbgtovbdelxdy.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_3UZIsIA3OzDdDpioKlJR1g_njcIfY1R";
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+        let selectedMode = "classic";
+
+
+        /* =========================================================
+           MODE SWITCH
+        ========================================================= */
+
+        modeButtons.forEach(button => {
+
+            button.addEventListener("click", () => {
+
+                const index =
+                    Number(button.dataset.index);
+
+                selectedMode =
+                    button.dataset.mode;
+
+
+                modeButtons.forEach(item => {
+                    item.classList.remove("active");
+                    item.setAttribute("aria-pressed", "false");
+                });
+
+
+                button.classList.add("active");
+                button.setAttribute("aria-pressed", "true");
+
+
+                selectionPill.style.transform =
+                    `translateX(${index * 100}%)`;
+
+            });
+
+        });
+
+
+        /* =========================================================
+           START GAME
+        ========================================================= */
+
+        startButton.addEventListener("click", () => {
+
+            const activeMode =
+                document.querySelector(".mode.active");
+
+            const destination =
+                activeMode?.dataset.path;
+
+            if (destination) {
+                window.location.href = destination;
+            }
+
+        });
+
+
+        /* =========================================================
+           ACCOUNT SESSION
+        ========================================================= */
+
+        async function requirePlayerSession() {
+
+            try {
+
+                const { data, error } =
+                    await supabaseClient.auth.getSession();
+
+                if (error) {
+                    throw error;
+                }
+
+                if (!data.session?.user) {
+                    window.location.replace("account_create.html");
+                    return;
+                }
+
+                startButton.disabled = false;
+
+            } catch (error) {
+
+                console.error(
+                    "Could not check the player session:",
+                    error
+                );
+
+                window.location.replace("account_create.html");
+            }
+
+        }
+
+
+        /* =========================================================
+           KEYBOARD
+        ========================================================= */
+
+        document.addEventListener("keydown", event => {
+
+            const active =
+                document.querySelector(".mode.active");
+
+            if (!active) {
+                return;
+            }
+
+            let index =
+                Number(active.dataset.index);
+
+
+            if (
+                event.key === "ArrowRight" ||
+                event.key === "ArrowDown"
+            ) {
+
+                event.preventDefault();
+
+                index =
+                    Math.min(index + 1, modeButtons.length - 1);
+
+                modeButtons[index].click();
+            }
+
+
+            if (
+                event.key === "ArrowLeft" ||
+                event.key === "ArrowUp"
+            ) {
+
+                event.preventDefault();
+
+                index =
+                    Math.max(index - 1, 0);
+
+                modeButtons[index].click();
+            }
+
+
+            if (
+                event.key === "Enter" &&
+                document.activeElement.tagName !== "BUTTON"
+            ) {
+
+                startButton.click();
+            }
+
+        });
+
+        requirePlayerSession();
+
+    </script>
 
 </body>
 </html>
-

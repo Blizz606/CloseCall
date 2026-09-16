@@ -570,6 +570,20 @@
             usernameInput.setAttribute("aria-invalid", "true");
         }
 
+        async function redirectIfSignedIn() {
+            const { data, error } = await supabaseClient.auth.getSession();
+
+            if (error) {
+                console.error("Could not check the existing session:", error);
+                return;
+            }
+
+            if (data.session?.user) {
+                setLoading(true);
+                window.location.replace("index.html");
+            }
+        }
+
         async function continueWithUsername() {
 
             const username =
@@ -645,6 +659,8 @@
                 usernameInput.setAttribute("aria-invalid", "false");
             }
         );
+
+        redirectIfSignedIn();
     </script>
 
 </body>

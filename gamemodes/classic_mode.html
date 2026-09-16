@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root {
@@ -45,7 +46,7 @@
       width: min(1495px, calc(100% - 48px));
       display: grid;
       grid-template-columns: 1.28fr 0.82fr;
-      gap: 46px;
+      gap: 120px;
       padding: 38px 0;
       transition:
         grid-template-columns 760ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -69,6 +70,13 @@
       background: rgba(255, 255, 255, 0.78);
       box-shadow: 0 12px 28px rgba(51, 64, 94, 0.1);
       backdrop-filter: blur(14px);
+    }
+
+    .topbar-stats {
+      display: flex;
+      align-items: center;
+      gap: 46px;
+      min-width: 0;
     }
 
     .stat {
@@ -101,6 +109,36 @@
 
     .stat--time i {
       color: var(--blue);
+    }
+
+    .account-summary {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-left: 24px;
+      min-width: 0;
+      color: #38455b;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .account-summary i {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--blue);
+      background: rgba(47, 115, 246, 0.1);
+      font-size: 17px;
+    }
+
+    .account-summary span {
+      overflow: hidden;
+      max-width: 160px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .next-progress {
@@ -281,6 +319,12 @@
       animation-delay: 860ms;
     }
 
+    .game.is-finishing .next-progress {
+      opacity: 0;
+      visibility: hidden;
+      transition-delay: 0ms;
+    }
+
     @keyframes bar-rise {
       from {
         transform: scaleY(0);
@@ -310,6 +354,153 @@
     .game.is-advancing {
       grid-template-columns: minmax(0, 1fr) minmax(0, 0fr);
       gap: 0;
+    }
+
+    .end-screen {
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 56px 76px;
+      color: var(--text);
+      text-align: center;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(18px);
+      pointer-events: none;
+      transition:
+        opacity 420ms ease,
+        transform 760ms cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 0ms linear 760ms;
+    }
+
+    .end-icon {
+      display: grid;
+      width: 58px;
+      height: 58px;
+      margin-bottom: 18px;
+      place-items: center;
+      border-radius: 18px;
+      color: #d49619;
+      background: rgba(227, 169, 51, 0.14);
+      font-size: 24px;
+    }
+
+    .end-kicker {
+      margin: 0 0 9px;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+    }
+
+    .end-title {
+      max-width: 560px;
+      margin: 0;
+      font-size: clamp(36px, 4.5vw, 58px);
+      line-height: 1.04;
+      letter-spacing: -0.06em;
+    }
+
+    .end-score-label {
+      margin: 26px 0 2px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .end-score {
+      margin: 0;
+      color: var(--blue);
+      font-size: clamp(48px, 6vw, 76px);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.07em;
+    }
+
+    .end-stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      width: min(100%, 610px);
+      margin: 32px 0 28px;
+      padding: 18px;
+      border: 1px solid rgba(217, 224, 236, 0.8);
+      border-radius: 24px;
+      background: rgba(244, 247, 252, 0.72);
+    }
+
+    .end-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      min-width: 0;
+      padding: 0 10px;
+    }
+
+    .end-stat + .end-stat {
+      border-left: 1px solid rgba(217, 224, 236, 0.9);
+    }
+
+    .end-stat strong {
+      color: var(--text);
+      font-size: 24px;
+      letter-spacing: -0.05em;
+    }
+
+    .end-stat span {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    .play-again-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-width: 178px;
+      height: 54px;
+      border: 0;
+      border-radius: 18px;
+      color: #ffffff;
+      background: var(--blue);
+      box-shadow: 0 10px 20px rgba(47, 115, 246, 0.2);
+      cursor: pointer;
+      font: inherit;
+      font-weight: 700;
+      transition: transform 240ms ease, background 240ms ease, box-shadow 240ms ease;
+    }
+
+    .play-again-button:hover {
+      background: var(--blue-dark);
+      box-shadow: 0 14px 26px rgba(47, 115, 246, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .game.is-complete {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0fr);
+      gap: 0;
+    }
+
+    .game.is-complete .image-card,
+    .game.is-complete .question-card > *:not(.end-screen) {
+      opacity: 0;
+      transform: translateX(-18px);
+      pointer-events: none;
+    }
+
+    .game.is-complete .end-screen {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+      transition-delay: 180ms, 180ms, 0ms;
     }
 
     .header {
@@ -521,6 +712,27 @@
         padding: 0 20px;
       }
 
+      .topbar-stats {
+        gap: 30px;
+      }
+
+      .account-summary {
+        gap: 6px;
+        margin-left: 14px;
+        font-size: 13px;
+      }
+
+      .account-summary i {
+        width: 30px;
+        height: 30px;
+        flex-basis: 30px;
+        font-size: 15px;
+      }
+
+      .account-summary span {
+        max-width: 92px;
+      }
+
       .stat {
         font-size: 13px;
       }
@@ -561,6 +773,25 @@
       .question-card {
         min-height: 565px;
         padding: 42px 34px;
+      }
+
+      .end-screen {
+        padding: 42px 28px;
+      }
+
+      .end-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px 0;
+        margin: 26px 0 24px;
+      }
+
+      .end-stat:nth-child(3) {
+        border-left: 0;
+      }
+
+      .end-stat:nth-child(n + 3) {
+        padding-top: 16px;
+        border-top: 1px solid rgba(217, 224, 236, 0.9);
       }
 
       .loading-bars {
@@ -641,9 +872,15 @@
 <body>
   <main class="game">
     <div class="topbar" aria-label="Game stats">
-      <div class="stat stat--streak"><i class="fa-solid fa-fire" aria-hidden="true"></i>Streak <strong id="streak">0</strong></div>
-      <div class="stat stat--score"><i class="fa-solid fa-trophy" aria-hidden="true"></i>Score <strong id="score">0</strong></div>
-      <div class="stat stat--time"><i class="fa-solid fa-clock" aria-hidden="true"></i>Avg. time <strong id="averageTime">0.0s</strong></div>
+      <div class="topbar-stats">
+        <div class="stat stat--streak"><i class="fa-solid fa-fire" aria-hidden="true"></i>Streak <strong id="streak">0</strong></div>
+        <div class="stat stat--score"><i class="fa-solid fa-trophy" aria-hidden="true"></i>Score <strong id="score">0</strong></div>
+        <div class="stat stat--time"><i class="fa-solid fa-clock" aria-hidden="true"></i>Avg. time <strong id="averageTime">0.0s</strong></div>
+      </div>
+      <div class="account-summary" aria-label="Signed-in account">
+        <i class="fa-regular fa-circle-user" aria-hidden="true"></i>
+        <span id="accountName">Player</span>
+      </div>
     </div>
 
     <section class="card question-card">
@@ -697,6 +934,25 @@
       </div>
 
       <p class="feedback" id="feedback" aria-live="polite"></p>
+
+      <section class="end-screen" id="endScreen" aria-live="polite" aria-hidden="true">
+        <div class="end-icon"><i class="fa-solid fa-trophy" aria-hidden="true"></i></div>
+        <p class="end-kicker">CLASSIC COMPLETE</p>
+        <h2 class="end-title">Great round, <span id="finalAccountName">Player</span>.</h2>
+        <p class="end-score-label">Round score</p>
+        <p class="end-score" id="finalScore">0</p>
+
+        <div class="end-stats">
+          <div class="end-stat"><strong id="finalCloseAnswers">0</strong><span>Close answers</span></div>
+          <div class="end-stat"><strong id="finalBestStreak">0</strong><span>Best streak</span></div>
+          <div class="end-stat"><strong id="finalAverageTime">0.0s</strong><span>Avg. time</span></div>
+          <div class="end-stat"><strong id="finalQuestionsAnswered">0</strong><span>Questions answered</span></div>
+        </div>
+
+        <button class="play-again-button" id="playAgainButton" type="button">
+          Play again <i class="fa-solid fa-arrow-rotate-right" aria-hidden="true"></i>
+        </button>
+      </section>
     </section>
 
     <aside class="card image-card" aria-label="Question image"></aside>
@@ -707,6 +963,60 @@
 
     const SUPABASE_URL = "https://fjjhpratbgtovbdelxdy.supabase.co";
     const SUPABASE_KEY = "sb_publishable_3UZIsIA3OzDdDpioKlJR1g_njcIfY1R";
+    const accountName = document.getElementById("accountName");
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    let currentUser = null;
+    let playerProfile = null;
+
+    async function initializePlayer() {
+      try {
+        const { data, error } = await supabaseClient.auth.getSession();
+
+        if (error) throw error;
+
+        if (!data.session?.user) {
+          window.location.replace("../account_create.html");
+          return false;
+        }
+
+        currentUser = data.session.user;
+        const username = currentUser.user_metadata?.username || "Player";
+        accountName.textContent = username;
+        document.getElementById("finalAccountName").textContent = username;
+
+        const { data: profile, error: profileError } = await supabaseClient
+          .from("profiles")
+          .upsert(
+            { id: currentUser.id, username },
+            { onConflict: "id" }
+          )
+          .select()
+          .single();
+
+        if (profileError) throw profileError;
+
+        const { data: startedProfile, error: gameStartError } = await supabaseClient
+          .from("profiles")
+          .update({
+            games_played: profile.games_played + 1,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", currentUser.id)
+          .select()
+          .single();
+
+        if (gameStartError) throw gameStartError;
+
+        playerProfile = startedProfile;
+        return true;
+      } catch (error) {
+        console.error("Could not initialize the player profile:", error);
+        feedback.textContent = "Your player profile could not be loaded. Please try again.";
+        input.disabled = true;
+        document.querySelector("#guessForm button").disabled = true;
+        return false;
+      }
+    }
 
     async function loadQuestionsFromSupabase() {
       try {
@@ -732,6 +1042,7 @@
             ? `${row.question_text}<br><span>${row.question_highlight}</span>`
             : row.question_text,
           hint: row.hint,
+          id: row.id ? String(row.id) : row.question_text,
           answer: Number(row.answer),
           unit: row.unit || "",
           image: row.image_url || ""
@@ -765,10 +1076,18 @@
     const streakValue = document.getElementById("streak");
     const scoreValue = document.getElementById("score");
     const averageTimeValue = document.getElementById("averageTime");
+    const endScreen = document.getElementById("endScreen");
+    const finalScore = document.getElementById("finalScore");
+    const finalCloseAnswers = document.getElementById("finalCloseAnswers");
+    const finalBestStreak = document.getElementById("finalBestStreak");
+    const finalAverageTime = document.getElementById("finalAverageTime");
+    const finalQuestionsAnswered = document.getElementById("finalQuestionsAnswered");
     let streak = 0;
     let score = 0;
     let totalAnswerTime = 0;
     let answeredQuestions = 0;
+    let closeAnswers = 0;
+    let bestRoundStreak = 0;
     let questionStartedAt = performance.now();
 
     function calculateRoundScore(diff, answer, answerTime, currentStreak) {
@@ -780,6 +1099,70 @@
       const streakMultiplier = 1 + Math.min(Math.max(currentStreak - 1, 0), 10) * 0.05;
 
       return Math.round((accuracyPoints + speedBonus) * streakMultiplier);
+    }
+
+    async function saveRound({ item, guess, diff, answerTime, roundScore }) {
+      if (!currentUser || !playerProfile) return;
+
+      try {
+        const { error: roundError } = await supabaseClient
+          .from("game_rounds")
+          .insert({
+            user_id: currentUser.id,
+            game_mode: "classic",
+            question_reference: item.id,
+            guess_value: guess,
+            correct_value: item.answer,
+            difference_value: diff,
+            score_earned: roundScore,
+            answer_time_ms: Math.round(answerTime * 1000)
+          });
+
+        if (roundError) throw roundError;
+
+        const profileUpdate = {
+          total_score: playerProfile.total_score + roundScore,
+          best_streak: Math.max(playerProfile.best_streak, streak),
+          questions_answered: playerProfile.questions_answered + 1,
+          total_answer_time_ms: playerProfile.total_answer_time_ms + Math.round(answerTime * 1000),
+          updated_at: new Date().toISOString()
+        };
+
+        const { data: updatedProfile, error: profileError } = await supabaseClient
+          .from("profiles")
+          .update(profileUpdate)
+          .eq("id", currentUser.id)
+          .select()
+          .single();
+
+        if (profileError) throw profileError;
+        playerProfile = updatedProfile;
+      } catch (error) {
+        console.error("Could not save this game round:", error);
+      }
+    }
+
+    function showEndScreen() {
+      finalScore.textContent = score.toLocaleString();
+      finalCloseAnswers.textContent = closeAnswers;
+      finalBestStreak.textContent = bestRoundStreak;
+      finalAverageTime.textContent = `${(totalAnswerTime / answeredQuestions).toFixed(1)}s`;
+      finalQuestionsAnswered.textContent = answeredQuestions;
+      endScreen.setAttribute("aria-hidden", "false");
+      game.classList.add("is-complete");
+    }
+
+    function playAgain() {
+      current = 0;
+      streak = 0;
+      score = 0;
+      totalAnswerTime = 0;
+      answeredQuestions = 0;
+      closeAnswers = 0;
+      bestRoundStreak = 0;
+      endScreen.setAttribute("aria-hidden", "true");
+      game.classList.remove("is-complete", "is-finishing", "is-advancing");
+      renderQuestion();
     }
 
     function renderQuestion() {
@@ -831,7 +1214,14 @@
         streak = 0;
       }
 
-      score += calculateRoundScore(diff, item.answer, answerTime, streak);
+      if (accuracy >= 0.9) {
+        closeAnswers += 1;
+      }
+
+      bestRoundStreak = Math.max(bestRoundStreak, streak);
+
+      const roundScore = calculateRoundScore(diff, item.answer, answerTime, streak);
+      score += roundScore;
 
       streakValue.textContent = streak;
       scoreValue.textContent = score;
@@ -860,16 +1250,32 @@
       yourBar.classList.toggle("is-compact", yourHeight < 0.18);
 
       game.classList.add("is-advancing");
+      saveRound({ item, guess, diff, answerTime, roundScore });
+
+      const isLastQuestion = current === questions.length - 1;
+      if (isLastQuestion) game.classList.add("is-finishing");
 
       window.setTimeout(() => {
-        current = (current + 1) % questions.length;
+        if (isLastQuestion) {
+          game.classList.remove("is-advancing", "is-finishing");
+          showEndScreen();
+          return;
+        }
+
+        current += 1;
         renderQuestion();
         game.classList.remove("is-advancing");
       }, 5760);
     });
 
-    loadQuestionsFromSupabase().then((loaded) => {
-      if (loaded) renderQuestion();
+    document.getElementById("playAgainButton").addEventListener("click", playAgain);
+
+    initializePlayer().then((ready) => {
+      if (!ready) return;
+
+      loadQuestionsFromSupabase().then((loaded) => {
+        if (loaded) renderQuestion();
+      });
     });
   </script>
 </body>
